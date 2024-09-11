@@ -5,7 +5,7 @@ Its philosophy and goals in respect of importance include program correctness, s
 ```txt
 function Add(Value: 0..10)
 {
-    return Value + 1;
+	return Value + 1;
 }
 
 return Add(2);
@@ -41,6 +41,22 @@ The components that make up a source-file are **Identifiers**, **Keywords**, **L
 > 
 > `{}`, `()`
 
+
+Unlike other languages, each token for the language has specific whitespace rules that are required to parse correctly.
+Expressions also need to be grouped in parentheses when combined, both to prevent order-of-operation issues as well as simplifying parsing.
+
+> For example, a function formatted like this would not parse.
+> ```txt
+> 	function  Identifier (Identifier :Type,Identifer : Type)   {
+> }
+> ```
+
+> Instead, the function would always have to be formatted as such.
+> ```txt
+> function Identifier(Identifier: Type, Identifier: Type)
+> {
+> }
+
 Source code is written with the traditional concept of lexical scoping, with the first scope allowing only **Item** definitions.
 There are three items, **Definitions**, **Functions** and **Program Returns**
 
@@ -75,8 +91,8 @@ Inside items are **Blocks**, **Statements** and **Expressions**.
 > 
 > ```txt
 > {
->     Statement;
->     Statement;
+> 	Statement;
+> 	Statement;
 > }
 > ```
 
@@ -132,8 +148,8 @@ This also prevents potentially illegal operations such as divide-by-zero or inte
 > ```txt
 > function Divide(Value: 0..10)
 > {
->     # Value could be 0, not compiled
->     return 50 / Value
+> 	# Value could be 0; not compiled
+> 	return 50 / Value
 > }
 > ```
 
