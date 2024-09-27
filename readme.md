@@ -1,6 +1,6 @@
-# W Programming Language
+
+# The W Programming Language
 W is an experimental imperative programming language which implements a theoretical value-based type-system that compiles to portable C90 source.
-Its philosophy and goals in respect of importance include program correctness, speed (runtime over compiling), consistency and simplicity.
 
 ```txt
 function Add(Value: 0..10)
@@ -40,22 +40,6 @@ The components that make up a source-file are **Identifiers**, **Keywords**, **L
 > Parentheses define scopes, order of operations and function calls.
 > 
 > `{}`, `()`
-
-
-Unlike other languages, each token for the language has specific whitespace rules that are required to parse correctly.
-Expressions also need to be grouped in parentheses when combined, both to prevent order-of-operation issues as well as simplifying parsing.
-
-> For example, a function formatted like this would not parse.
-> ```txt
-> 	function  Identifier (Identifier :Type,Identifer : Type)   {
-> }
-> ```
-
-> Instead, the function would always have to be formatted as such.
-> ```txt
-> function Identifier(Identifier: Type, Identifier: Type)
-> {
-> }
 
 Source code is written with the traditional concept of lexical scoping, with the first scope allowing only **Item** definitions.
 There are three items, **Definitions**, **Functions** and **Program Returns**
