@@ -31,7 +31,7 @@ There are a few primary components that make up a source-file in W:
 * **Parentheses**:  Grouped characters which define scopes, order of operations and function calls. They are whitespace-independent.
 `{}`, `()`
 
-> Further Grammar Information https://github.com/WalkerTrott/W-Lang/blob/main/Grammar.md
+> [Further Grammar Information](https://github.com/WalkerTrott/W-Lang/blob/main/Grammar.md)
 
 ***
 
@@ -106,7 +106,7 @@ function Divide(Value: 0..10)
 }
 ```
 
-> Further Typesystem Information https://github.com/WalkerTrott/W-Lang/blob/main/Typesystem.md
+> [Further Typesystem Information](https://github.com/WalkerTrott/W-Lang/blob/main/Typesystem.md)
 
 ****
 
