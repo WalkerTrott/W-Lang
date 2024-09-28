@@ -1,4 +1,3 @@
-
 # Value-Based Typesystem 
 ## Overview
 W's typesystem is based around the idea that types are sets of possible values an expression may produce or an identifier may carry, as opposed to a genre describing how the value should be stored. This allows for the compiler to follow the program's structure and provide better validation, analyzation and optimization.
@@ -6,7 +5,7 @@ W's typesystem is based around the idea that types are sets of possible values a
 ## Advantages
 This form of a typesystem provides many more advantages compared to a classical genre-based counterparts, namely:
 
-**Integer Size Inference**: Because the maximum and minimum values an expression or identifier may hold is already known statically, the compiler can infer exactly how many bits and what signedness an integer must require without further annotation by the programmer.
+**Integer Size Inference**: Because the maximum and minimum values an expression or identifier may hold is already known statically, the compiler can infer exactly how many bits and what signing an integer must require without further annotation by the programmer.
 
 **Static Validation without *Any* Runtime Overhead**: Since all possible values an expression may produce is already known, the compiler can catch unsafe operations such as Divide-By-Zero, Different-Sign-Comparison and Integer Overflowing, completely statically and without any runtime overhead.
 
