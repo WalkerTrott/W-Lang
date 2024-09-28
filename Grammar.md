@@ -16,35 +16,34 @@ W's syntax is not particularly interesting due its largest focus on its typesyst
 An informal EBNF of the language's grammar can be seen as below. Note that whitespace is implied between certain elements.
 
 ```ebnf
-Character = Letter | Digit ;
-  Letter = UppercaseLetter | LowercaseLetter ;
-    UppercaseLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ;
-    LowercaseLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;
-  Digit = "0" | CountingDigit ;
-    CountingDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
+Program = { Function } , Return ;
 
-Term = Identifier | Literal ;
+  Annotation = Literal | UnionAnnotation | RangeAnnotation ;
+    UnionAnnotation = Literal , "|" , Literal , { "|" , Literal } ;
+    RangeAnnotation = Literal , ".." , Literal ;
+
   Identifier = UppercaseLetter , { Character } ;
-  Literal = "0" | ["-"] , CountingDigit , { Digit } ;
+  Literal = "0" | [ "-" ] , CountingDigit , { Digit } ;
 
-Annotation = Literal | UnionAnnotation | RangeAnnotation ;
-  UnionAnnotation = Literal , "|" , Literal , { "|" , Literal } ;
-  RangeAnnotation = Literal , ".." , Literal ;
+    Character = Letter | Digit ;
+      Letter = UppercaseLetter | LowercaseLetter ;
+        UppercaseLetter = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H" | "I" | "J" | "K" | "L" | "M" | "N" | "O" | "P" | "Q" | "R" | "S" | "T" | "U" | "V" | "W" | "X" | "Y" | "Z" ;
+        LowercaseLetter = "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i" | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r" | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z" ;
+    Digit = "0" | CountingDigit ;
+      CountingDigit = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9" ;
 
-Item = Define | Function | Return;
-
-  Define = "define" , Identifier , "=" , Expression , ";" ;
-  Function = "function" , Identifier , "(" , Parameter , { "," , Parameter } , ")" , Block ;
+  Function = "function" , Identifier , "(" , [ Parameter , { "," , Parameter } ] , ")" , Block ;
+  Return = "return" , Expression , ";" ;
 
     Parameter = Identifier , ":" , Annotation ;
     Block = "{" , Statement , { Statement } , "}" ;
 
-      Statement = Define | Function | Let | If | Return ;
+      Statement = Function | Let | If | Return ;
         Let = "let" , Identifier , "=" , Expression , ";" ;
         If = "if" , Expression , Block , [ "else" , Block ] ;
-        Return = "return" , Expression , ";" ;
 
-      Expression = Term | BinaryExpression | UnaryExpression ;
+      Expression = Identifier | Literal | BinaryExpression | UnaryExpression | FunctionCall ;
         BinaryExpression = "(" , Expression , "+" | "-" | "*" | "/" | "%" | "and" | "or" , Expression , ")" ;
         UnaryExpression = "(" , "not" | "-" , Expression , ")" ;
+        FunctionCall = Identifier , "(" , [ Expression , { "," , Expression } ] , ")" ;
 ```
