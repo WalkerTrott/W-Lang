@@ -1,6 +1,5 @@
-
 # The W Programming Language
-W is an experimental imperative programming language which implements a theoretical value-based type-system that compiles to portable C90 source.
+W is a programming language which implements a theoretical value-based typesystem that compiles to portable C89 source.
 
 ```txt
 function Add(Value: 0..10)
@@ -12,144 +11,111 @@ return Add(2);
 ```
 
 ## Design
-### File Structure
-The components that make up a source-file are **Identifiers**, **Keywords**, **Literals**, **Operators**, **Separators** and **Parentheses**.
+There are a few primary components that make up a source-file in W:
 
-> Identifiers are groups of characters starting with an alphabetical character followed by alphanumeric or underscore characters and terminated by a whitespace or separator.
-> The preferred style for identifiers is `PascalCase`, which is enforced by the checker.
-> 
-> `ThisIsAnIdentifier`, `Abc123`
+* **Identifiers**: Strings of characters starting with an uppercase alphabetical character followed by alphanumeric and terminated by a whitespace character or separator.
+`ThisIsAnIdentifier`, `Abc123`
 
-> Keywords are reserved all-lowercase identifiers which are used to create construct certain language concepts.
-> 
-> `function`, `let`, `and`
+* **Keywords**: Reserved all-lowercase identifiers which are used to create certain language concepts.
+`function`, `let`, `and`
 
-> Literals (currently only numerical integers) are strings of numerical numbers which may start with a dash (negative) and are terminated by a whitespace or separator.
-> Note that the negative sign is not a unary negate operator, but a part of the literal when paired with a numeric constant.
-> 
-> `0`, `3541`, `-92`
+* **Literals**: Strings of numerical characters which may start with a dash (negative) and are terminated by a whitespace character or separator. A negative zero is not allowed.
+`0`, `3541`, `-92`
 
-> Operators are non-alphanumeric characters which are used to form unary or binary operations.
-> 
-> `+`, `*`, `==`
+* **Operators**: Non-alphanumeric characters which are used to form unary or binary operations. They are whitespace-independent.
+`+`, `*`, `==`
 
-> Separators are punctuation characters which separate concepts.
-> 
-> `,`, `.`, `:`, `;`
+* **Separators**: Punctuation characters which separate concepts. They are whitespace-independent.
+`,`, `:`, `;`
 
-> Parentheses define scopes, order of operations and function calls.
-> 
-> `{}`, `()`
+* **Parentheses**:  Grouped characters which define scopes, order of operations and function calls. They are whitespace-independent.
+`{}`, `()`
 
-Source code is written with the traditional concept of lexical scoping, with the first scope allowing only **Item** definitions.
-There are three items, **Definitions**, **Functions** and **Program Returns**
+> Further Grammar Information https://github.com/WalkerTrott/W-Lang/blob/main/Grammar.md
 
-> Definitions create static and constant variables with an identifier and expression.
-> 
-> `define Identifier = Expression`
+***
 
-> Functions start with the function keyword followed by an identifier for their name.
-> An arbitrary number of arguments one to eight can be defined in identifier-colon-type-comma format.
-> A type annotation after the header is not needed because the return type can be deduced based on the body.
-> 
-> ```txt
-> function Identifier(Identifier: Type)
-> {
-> }
-> 
-> function Identifier(Identifier: Type, Identifier: Type)
-> {
-> }
-> ```
+Source code is written with the traditional concept of lexical scoping, with the first implicit scope allowing only special statements called items:
 
-> There is always one program return allowed, which determines the output of the program.
-> The return can be any valid expression, usually an initial function call.
-> 
-> `return Expression;`
+* **Functions**: These define a construct that takes an input of specific parameters and outputs a return. Parameters require an annotation to describe what kinds of values they allow, but do not require a return annotation because it can be inferred.
+`function Identifier(Identifier: Type, Identifier: Type) {}`
 
-### Blocks, Statements and Expressions
-Inside items are **Blocks**, **Statements** and **Expressions**.
+* **Returns**: There is only one main return allowed, which determines the output of the program. The return value can be any valid expression, which is usually an initial function call.
+`return Expression;`
 
-> Blocks are collections of statements separated with semicolons.
-> These are grouped between braces.
-> 
-> ```txt
-> {
-> 	Statement;
-> 	Statement;
-> }
-> ```
+***
 
-> Statements are single instructions that define or construct a concept.
-> They usually start with keywords and end with a semicolon, unless they are composed with blocks.
-> 
-> `define Name = 1;`, `if Value {} else {}`
+Function bodies are blocks, which are groups of statements that describe what the function should do in a linear fashion:
 
-> Expressions are combinations of operations between literals and/or variables.
-> Expressions evaluate to one value and can be combined together.
-> There are unary (single operand) and binary (double operand) expressions.
-> 
-> `-Value`, `Function(Argument)`
-> `400 + 2`, `Value * (-32 / (Value - 1))`
+* **Variables**: Define constant variables that link an identifier to an expression’s result.
+`let Identifier = Expression;`
 
-### Statements
-There are four types of statements, **Define**, **Let**, **If-Else** and **Return**.
+* **Do-Blocks**: Create more blocks to encapsulate statements.
+`do {}`
 
-> Let statements define a constant, non-static value to a unique identifier.
-> The value must be of a complex type, meaning it cannot be simple.
-> 
-> `let Identifier = Expression;`
+* **Conditionals**: Define conditional blocks that, if the conditional expression evaluates a non-zero value, will run. If an optional else-clause is added, it will run instead if the conditional fails.
+`if Expression {}`
+`if Expression {} else {}`
 
-> If-else statements take an expression as a conditional and executes the following block if the expression yields to not 0 at runtime.
-> If an else-clause is added, its block will execute instead if the expression yields 0.
-> The conditional must be a complex type.
-> 
-> `if Expression {}`, `if Expression {} else {}`
+Returns are also statements allowed inside function bodies, as long as there is at least one unconditional return. No other statement may proceed a return statement.
 
-> Return statements exit a function with an expression.
-> Different return statements can be nested within if-statement blocks, but the combined type must be complex and equal the function's return type.
-> 
-> `return Expression;`
+***
 
-### Typesystem
-There are two forms of types, **Simple Types** and **Complex Types**.
+Expressions are combinations of operations between other expressions called terms. There are two unary (single-term) expressions:
 
-> Simple types are single values which represent a single literal.
-> 
-> `1`, `-3629`
+* **Negation**: Flips the sign of the operand. The operand cannot be above `2^63 - 1`.
+`-Term`
 
-> Complex types are unions of simple types which represent multiple possible values.
-> Ranges are unions of every simple type between a start and end value.
-> 
-> `1|3|5`, `0..5`
+* **Not**: Evaluates to 1 if the operand is 0, and 0 otherwise.
+`not Term`
 
-Parameters are the only place where types must be annotated, and there they must be complex.
-All other variables and return types can be deduced based on the possible values based of each parameter.
+There are also seven binary (double-term) expressions:
 
-This allows for the checker to properly analyze logic such as if-else statements and prevent any unnecessary or bug-prone calculations.
-This also prevents potentially illegal operations such as divide-by-zero or integer overflowing from occurring.
+* **And**: Evaluates to 1 if both the operands are not 0, or 0 if otherwise.
+`Term and Term`
 
-> ```txt
-> function Divide(Value: 0..10)
-> {
-> 	# Value could be 0; not compiled
-> 	return 50 / Value
-> }
-> ```
+* **Or**: Evaluates to 1 if at least one operand is not 0, or 0 if otherwise.
+`Term or Term`
 
-### Internals
-There are three parts to the language, the **Lexer**, **Parser**, **Checker** and **Compiler**.
+* **Addition**: Evaluates the sum of the operands. The result cannot be above `2^64 - 1` or below `-2^63`.
+`Term + Term`
 
-> The Lexer breaks up a source-file string into tokens, such as identifiers, keywords, literals, operators, separators and parentheses.
-> All literals can be in a range of `-9223372036854775808` to `9223372036854775807`, or `0` to `18446744073709551615`, or any representable interval in between.
-> These literals are stored as a union, but they are compiled to use the smallest integer type they need.
-> If an illegal literal, keyword or character is found, the Lexer immediately aborts compilation and sends the error through the pipeline.
+* **Subtraction**: Evaluates the difference of the operands. The result cannot be above `2^64 - 1` or below `-2^63`.
+`Term - Term`
 
-> The Parser transforms the lexed tokens into an Abstract Syntax Tree, which describes how the program structure works.
-> If the order of some tokens are illegal, the Parser buffers every error and then aborts compilation while sending the error through the pipeline.
+* **Multiplication**: Evaluates the product of the operands. The result cannot be above `2^64 - 1` or below `-2^63`.
+`Term * Term`
 
-> The Checker goes over the Abstract Syntax Tree and checks the types, values and statements to determine if they are allowed.
-> If a value passed for an operation has a conflicting type with the allowed type, then it is flagged and propagates through the error pipeline.
+* **Division**: Evaluates the quotient of the operands. The second operand cannot be 0, and the result cannot be above `2^64 - 1` or below `-2^63`.
+`Term / Term`
 
-> The Compiler converts the validated Abstract Syntax Tree into a single valid C90 source-file, which then can be compiled by any supported C or C++ compiler.
-> The source is not meant to be read, and instead is minified so second compilation doesn't take too much time.
+* **Remainder**: Evaluates the remainder (or modulus) of a division between the operands. The first operand must be 0 or above, while the second operand must be 1 or above, and the result cannot be above `2^64 - 1` or below `-2^63`.
+`Term % Term`
+
+***
+
+Every identifier, literal and expression in W has a type associated with it, representing every value it could hold. Parameters are the only place where types must be annotated.
+
+This allows for the compiler to prevent potentially dangerous operations such as Divide-By-Zero or Integer Overflowing from occurring.
+
+```txt
+function Divide(Value: 0..10)
+{
+	# Value could be 0; not compiled
+	return 50 / Value;
+}
+```
+
+> Further Typesystem Information https://github.com/WalkerTrott/W-Lang/blob/main/Typesystem.md
+
+****
+
+The W compiler implementation is split into four parts:
+
+* **Lexing**: Breaks up a source-file into tokens for the parser to process, warning about any illegal characters, keywords or literals that may appear.
+
+* **Parsing**: Parses the created tokens into a syntax tree, warning about illegal or missing program structures.
+
+* **Checking**: Validates the integrity of the program by evaluating every expression's type and warning about any potential errors.
+
+* **Compiling**: Converts the validated tree into a compatible C89 source-file that respects other C and C++ standards, to maximize portability.
