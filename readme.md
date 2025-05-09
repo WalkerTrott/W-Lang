@@ -24,8 +24,6 @@ There are a few primary components that make up a source-file in W:
 * **Symbols**: Non-alphanumeric characters which are used to form operations or separate groups of concepts. They are whitespace-independent.
 `+`, `*`, `==`
 
-> [Further Grammar Information](https://github.com/WalkerTrott/W-Lang/blob/main/Grammar.md)
-
 ***
 
 Source code is written with the traditional concept of lexical scoping, with the first implicit scope allowing only special statements called items:
