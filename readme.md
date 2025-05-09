@@ -1,13 +1,12 @@
 # The W Programming Language
-W is a programming language which implements a theoretical value-based typesystem that compiles to portable C89 source.
+W is a programming language which implements a theoretical value-based typesystem that compiles to portable C90 source.
 
 ```txt
 function Add(Value: 0..10)
-{
-	return Value + 1;
-}
+	return Value + 1
+end
 
-return Add(2);
+return Add(2)
 ```
 
 ## Design
@@ -22,14 +21,8 @@ There are a few primary components that make up a source-file in W:
 * **Literals**: Strings of numerical characters which may start with a dash (negative) and are terminated by a whitespace character or separator. A negative zero is not allowed.
 `0`, `3541`, `-92`
 
-* **Operators**: Non-alphanumeric characters which are used to form unary or binary operations. They are whitespace-independent.
+* **Symbols**: Non-alphanumeric characters which are used to form operations or separate groups of concepts. They are whitespace-independent.
 `+`, `*`, `==`
-
-* **Separators**: Punctuation characters which separate concepts. They are whitespace-independent.
-`,`, `:`, `;`
-
-* **Parentheses**:  Grouped characters which define scopes, order of operations and function calls. They are whitespace-independent.
-`{}`, `()`
 
 > [Further Grammar Information](https://github.com/WalkerTrott/W-Lang/blob/main/Grammar.md)
 
@@ -38,24 +31,24 @@ There are a few primary components that make up a source-file in W:
 Source code is written with the traditional concept of lexical scoping, with the first implicit scope allowing only special statements called items:
 
 * **Functions**: These define a construct that takes an input of specific parameters and outputs a return. Parameters require an annotation to describe what kinds of values they allow, but do not require a return annotation because it can be inferred.
-`function Identifier(Identifier: Type, Identifier: Type) {}`
+`function Identifier(Identifier: Type, Identifier: Type) end`
 
 * **Returns**: There is only one main return allowed, which determines the output of the program. The return value can be any valid expression, which is usually an initial function call.
-`return Expression;`
+`return Expression`
 
 ***
 
 Function bodies are blocks, which are groups of statements that describe what the function should do in a linear fashion:
 
 * **Variables**: Define constant variables that link an identifier to an expression’s result.
-`let Identifier = Expression;`
+`let Identifier = Expression`
 
 * **Do-Blocks**: Create more blocks to encapsulate statements.
-`do {}`
+`do end`
 
 * **Conditionals**: Define conditional blocks that, if the conditional expression evaluates a non-zero value, will run. If an optional else-clause is added, it will run instead if the conditional fails.
-`if Expression {}`
-`if Expression {} else {}`
+`if Expression then end`
+`if Expression then else end`
 
 Returns are also statements allowed inside function bodies, as long as there is at least one unconditional return. No other statement may proceed a return statement.
 
@@ -100,10 +93,9 @@ This allows for the compiler to prevent potentially dangerous operations such as
 
 ```txt
 function Divide(Value: 0..10)
-{
-	# Value could be 0; not compiled
-	return 50 / Value;
-}
+	-- Value could be 0; not compiled
+	return 50 / Value
+end
 ```
 
 > [Further Typesystem Information](https://github.com/WalkerTrott/W-Lang/blob/main/Typesystem.md)
@@ -118,4 +110,4 @@ The W compiler implementation is split into four parts:
 
 * **Checking**: Validates the integrity of the program by evaluating every expression's type and warning about any potential errors.
 
-* **Compiling**: Converts the validated tree into a compatible C89 source-file that respects other C and C++ standards, to maximize portability.
+* **Compiling**: Converts the validated tree into a compatible C90 source-file that respects other C and C++ standards, to maximize portability.
